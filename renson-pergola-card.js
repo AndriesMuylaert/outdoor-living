@@ -4,10 +4,10 @@
  * via the OverKiz integration.
  *
  * GitHub: https://github.com/AndriesMuylaert/Outdoor-living
- * Version: 1.0.1
+ * Version: 1.2.0
  */
 
-const CARD_VERSION = '1.1.0';
+const CARD_VERSION = '1.2.0';
 
 // Tilt % → visual open angle (0 = closed/flat, 100 = fully open/vertical)
 function tiltToAngle(pct) {
@@ -131,6 +131,7 @@ class RensonPergolaCard extends HTMLElement {
 
         :host {
           display: block;
+          -webkit-tap-highlight-color: transparent;
           --bg: #1a1d21;
           --surface: #22262c;
           --surface2: #2a2f38;
@@ -243,7 +244,6 @@ class RensonPergolaCard extends HTMLElement {
           align-items: center;
           gap: 12px;
           border: 1px solid var(--border);
-          transition: border-color 0.2s;
         }
 
         /* Responsive / Compact row configuration */
@@ -258,10 +258,6 @@ class RensonPergolaCard extends HTMLElement {
           display: flex;
           align-items: center;
           gap: 10px;
-        }
-
-        .control-row:hover {
-          border-color: var(--accent);
         }
 
         .ctrl-icon {
@@ -343,22 +339,22 @@ class RensonPergolaCard extends HTMLElement {
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: background 0.15s, border-color 0.15s, transform 0.1s;
+          transition: background 0.1s, transform 0.1s;
           padding: 0;
-        }
-
-        button:hover {
-          background: var(--accent);
-          border-color: var(--accent);
-          color: #000;
-          transform: scale(1.08);
-        }
-
-        button:focus {
+          -webkit-tap-highlight-color: transparent;
           outline: none;
         }
 
+        button:focus,
+        button:focus-visible {
+          outline: none;
+          box-shadow: none;
+        }
+
         button:active {
+          background: var(--accent);
+          border-color: var(--accent);
+          color: #000;
           transform: scale(0.95);
         }
 
@@ -494,7 +490,11 @@ class RensonPergolaCard extends HTMLElement {
         .toggle.on::after { left: 23px; }
         .toggle.off::after { left: 3px; }
 
-        .toggle:hover { transform: scale(1.05); }
+        .toggle {
+          -webkit-tap-highlight-color: transparent;
+          outline: none;
+        }
+
         .toggle:active { transform: scale(0.97); }
 
         .two-column-grid {
@@ -510,6 +510,23 @@ class RensonPergolaCard extends HTMLElement {
           text-transform: uppercase;
           letter-spacing: 1px;
           padding: 0 4px 4px;
+        }
+
+        /* Quick-set rows: set both screens / both lights at once */
+        .quick-set-row {
+          display: flex;
+          gap: 6px;
+          margin-bottom: 2px;
+        }
+
+        .quick-set-row button {
+          flex: 1;
+          width: auto;
+          height: 28px;
+          border-radius: 8px;
+          font-family: 'DM Mono', monospace;
+          font-size: 11px;
+          font-weight: 600;
         }
       </style>
 
@@ -561,6 +578,14 @@ class RensonPergolaCard extends HTMLElement {
           </div>
 
           <div class="section-label" style="margin-top:4px">Screens</div>
+
+          <div class="quick-set-row" data-target="screens">
+            <button title="Both screens to 0%" class="quick-btn" data-pct="0">0%</button>
+            <button title="Both screens to 25%" class="quick-btn" data-pct="25">25%</button>
+            <button title="Both screens to 50%" class="quick-btn" data-pct="50">50%</button>
+            <button title="Both screens to 75%" class="quick-btn" data-pct="75">75%</button>
+            <button title="Both screens to 100%" class="quick-btn" data-pct="100">100%</button>
+          </div>
 
           <div class="two-column-grid">
             <div class="control-row compact">
@@ -617,6 +642,14 @@ class RensonPergolaCard extends HTMLElement {
           </div>
 
           <div class="section-label" style="margin-top:4px">Lighting</div>
+
+          <div class="quick-set-row" data-target="leds">
+            <button title="Both lights to 0%" class="quick-btn" data-pct="0">0%</button>
+            <button title="Both lights to 25%" class="quick-btn" data-pct="25">25%</button>
+            <button title="Both lights to 50%" class="quick-btn" data-pct="50">50%</button>
+            <button title="Both lights to 75%" class="quick-btn" data-pct="75">75%</button>
+            <button title="Both lights to 100%" class="quick-btn" data-pct="100">100%</button>
+          </div>
 
           <div class="two-column-grid">
             <div class="control-row compact ${ledLOn ? 'led-on' : ''}">
@@ -854,6 +887,40 @@ class RensonPergolaCard extends HTMLElement {
     sr.getElementById('led-r-slider')?.addEventListener('change', (e) => {
       this._callService('number', 'set_value', cfg.led_right_slider, { value: parseFloat(e.target.value) });
     });
+
+    // Quick-set rows – set both screens / both lights at once
+    sr.querySelectorAll('.quick-set-row[data-target="screens"] .quick-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this._setBothScreens(parseInt(btn.dataset.pct, 10));
+      });
+    });
+
+    sr.querySelectorAll('.quick-set-row[data-target="leds"] .quick-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this._setBothLeds(parseInt(btn.dataset.pct, 10));
+      });
+    });
+  }
+
+  // Set both screens (left & right) to the same position in one tap
+  _setBothScreens(pct) {
+    const cfg = this._config;
+    this._callService('cover', 'set_cover_position', cfg.screen_left, { position: pct });
+    this._callService('cover', 'set_cover_position', cfg.screen_right, { position: pct });
+  }
+
+  // Set both LEDs (left & right) to the same level in one tap
+  _setBothLeds(pct) {
+    const cfg = this._config;
+    if (pct <= 0) {
+      this._callService('light', 'turn_off', cfg.led_left);
+      this._callService('light', 'turn_off', cfg.led_right);
+    } else {
+      this._callService('light', 'turn_on', cfg.led_left);
+      this._callService('light', 'turn_on', cfg.led_right);
+    }
+    this._callService('number', 'set_value', cfg.led_left_slider, { value: pct });
+    this._callService('number', 'set_value', cfg.led_right_slider, { value: pct });
   }
 
   static getConfigElement() {
