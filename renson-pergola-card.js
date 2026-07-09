@@ -4,10 +4,10 @@
  * via the OverKiz integration.
  *
  * GitHub: https://github.com/AndriesMuylaert/Outdoor-living
- * Version: 1.2.0
+ * Version: 1.3.0
  */
 
-const CARD_VERSION = '1.2.0';
+const CARD_VERSION = '1.3.0';
 
 // Tilt % → visual open angle (0 = closed/flat, 100 = fully open/vertical)
 function tiltToAngle(pct) {
@@ -577,6 +577,14 @@ class RensonPergolaCard extends HTMLElement {
             </div>
           </div>
 
+          <div class="quick-set-row" data-target="roof">
+            <button title="Roof to 0%" class="quick-btn" data-pct="0">0%</button>
+            <button title="Roof to 25%" class="quick-btn" data-pct="25">25%</button>
+            <button title="Roof to 50%" class="quick-btn" data-pct="50">50%</button>
+            <button title="Roof to 75%" class="quick-btn" data-pct="75">75%</button>
+            <button title="Roof to 100%" class="quick-btn" data-pct="100">100%</button>
+          </div>
+
           <div class="section-label" style="margin-top:4px">Screens</div>
 
           <div class="two-column-grid">
@@ -888,7 +896,13 @@ class RensonPergolaCard extends HTMLElement {
       this._callService('number', 'set_value', cfg.led_right_slider, { value: parseFloat(e.target.value) });
     });
 
-    // Quick-set rows – set both screens / both lights at once
+    // Quick-set rows – set roof / both screens / both lights in one tap
+    sr.querySelectorAll('.quick-set-row[data-target="roof"] .quick-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this._setRoof(parseInt(btn.dataset.pct, 10));
+      });
+    });
+
     sr.querySelectorAll('.quick-set-row[data-target="screens"] .quick-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         this._setBothScreens(parseInt(btn.dataset.pct, 10));
@@ -900,6 +914,12 @@ class RensonPergolaCard extends HTMLElement {
         this._setBothLeds(parseInt(btn.dataset.pct, 10));
       });
     });
+  }
+
+  // Set the roof tilt to a specific position in one tap
+  _setRoof(pct) {
+    const cfg = this._config;
+    this._callService('cover', 'set_cover_tilt_position', cfg.roof_cover, { tilt_position: pct });
   }
 
   // Set both screens (left & right) to the same position in one tap

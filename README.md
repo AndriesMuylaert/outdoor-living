@@ -12,6 +12,7 @@ A Home Assistant Lovelace custom card for the **Renson Camargue** pergola, using
 
 - **Live SVG visual** of the pergola: louvres animate based on actual tilt %, screens drop to their real position, LED panels glow when on.
 - **Roof louvres** — open tilt / My (stop) / close tilt with live % readout.
+- **Quick-set roof tilt** — one-tap buttons to set the roof tilt to 0 / 25 / 50 / 75 / 100 %.
 - **Screen left & right** — open / My (stop) / close with live % readout.
 - **Quick-set both screens** — one-tap buttons to set left & right screens together to 0 / 25 / 50 / 75 / 100 %.
 - **LED left & right** — on / My (preferred position) / off buttons, plus a position slider (`number` entity) with live readout.
@@ -23,7 +24,7 @@ A Home Assistant Lovelace custom card for the **Renson Camargue** pergola, using
 
 ![Renson Camargue Pergola Card preview](./docs/screenshot.png)
 
-> Rendered directly from this card's own layout and colors, with sample data (roof tilt 45%, screens at 60%/30%, one LED on). The card renders a simplified front-perspective SVG of the Camarque structure — louvre angle, screen drop level, and LED glow all update in real time from your actual entity states. Quick-set rows sit just below the standard buttons for both the Screens and Lighting sections.
+> Rendered directly from this card's own layout and colors, with sample data (roof tilt 45%, screens at 60%/30%, one LED on). The card renders a simplified front-perspective SVG of the Camarque structure — louvre angle, screen drop level, and LED glow all update in real time from your actual entity states. Quick-set rows sit just below the standard buttons for the Roof, Screens, and Lighting sections.
 
 ## Installation
 
@@ -90,12 +91,13 @@ OverKiz entity IDs are auto-generated from the device names you configured in th
 
 The **My** button sends the OverKiz "preferred position" stop command — works if you have a My position programmed in the Renson / Somfy app.
 
-### Quick-set (both at once)
+### Quick-set
 
-Below the individual Screens controls and below the individual LED controls, a row of five buttons (`0% / 25% / 50% / 75% / 100%`) lets you set **both** screens or **both** LEDs to the same value in a single tap:
+Below the individual Roof controls, the individual Screens controls, and the individual LED controls, a row of five buttons (`0% / 25% / 50% / 75% / 100%`) lets you jump straight to a value in a single tap:
 
 | Row | Action |
 |---|---|
+| Roof quick-set | Calls `cover.set_cover_tilt_position` with the chosen `tilt_position` on `roof_cover`. |
 | Screens quick-set | Calls `cover.set_cover_position` with the chosen `position` on `screen_left` and `screen_right` simultaneously. |
 | LEDs quick-set | At 0%, calls `light.turn_off` on `led_left` and `led_right`. Above 0%, calls `light.turn_on` on both, then `number.set_value` on `led_left_slider` and `led_right_slider` to set the level. |
 
