@@ -21,7 +21,9 @@ A Home Assistant Lovelace custom card for the **Renson Camargue** pergola, using
 
 ## Preview
 
-> The card renders a simplified front-perspective SVG of the Camarque structure. Louvre angle, screen drop level, and LED glow all update in real time.
+![Renson Camargue Pergola Card preview](./docs/screenshot.png)
+
+> Rendered directly from this card's own layout and colors, with sample data (roof tilt 45%, screens at 60%/30%, one LED on). The card renders a simplified front-perspective SVG of the Camarque structure — louvre angle, screen drop level, and LED glow all update in real time from your actual entity states. Quick-set rows sit just below the standard buttons for both the Screens and Lighting sections.
 
 ## Installation
 
@@ -90,7 +92,7 @@ The **My** button sends the OverKiz "preferred position" stop command — works 
 
 ### Quick-set (both at once)
 
-Above the individual Screens controls and above the individual LED controls, a row of five buttons (`0% / 25% / 50% / 75% / 100%`) lets you set **both** screens or **both** LEDs to the same value in a single tap:
+Below the individual Screens controls and below the individual LED controls, a row of five buttons (`0% / 25% / 50% / 75% / 100%`) lets you set **both** screens or **both** LEDs to the same value in a single tap:
 
 | Row | Action |
 |---|---|

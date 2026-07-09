@@ -516,7 +516,7 @@ class RensonPergolaCard extends HTMLElement {
         .quick-set-row {
           display: flex;
           gap: 6px;
-          margin-bottom: 2px;
+          margin-top: 2px;
         }
 
         .quick-set-row button {
@@ -579,14 +579,6 @@ class RensonPergolaCard extends HTMLElement {
 
           <div class="section-label" style="margin-top:4px">Screens</div>
 
-          <div class="quick-set-row" data-target="screens">
-            <button title="Both screens to 0%" class="quick-btn" data-pct="0">0%</button>
-            <button title="Both screens to 25%" class="quick-btn" data-pct="25">25%</button>
-            <button title="Both screens to 50%" class="quick-btn" data-pct="50">50%</button>
-            <button title="Both screens to 75%" class="quick-btn" data-pct="75">75%</button>
-            <button title="Both screens to 100%" class="quick-btn" data-pct="100">100%</button>
-          </div>
-
           <div class="two-column-grid">
             <div class="control-row compact">
               <div class="ctrl-header">
@@ -641,15 +633,15 @@ class RensonPergolaCard extends HTMLElement {
             </div>
           </div>
 
-          <div class="section-label" style="margin-top:4px">Lighting</div>
-
-          <div class="quick-set-row" data-target="leds">
-            <button title="Both lights to 0%" class="quick-btn" data-pct="0">0%</button>
-            <button title="Both lights to 25%" class="quick-btn" data-pct="25">25%</button>
-            <button title="Both lights to 50%" class="quick-btn" data-pct="50">50%</button>
-            <button title="Both lights to 75%" class="quick-btn" data-pct="75">75%</button>
-            <button title="Both lights to 100%" class="quick-btn" data-pct="100">100%</button>
+          <div class="quick-set-row" data-target="screens">
+            <button title="Both screens to 0%" class="quick-btn" data-pct="0">0%</button>
+            <button title="Both screens to 25%" class="quick-btn" data-pct="25">25%</button>
+            <button title="Both screens to 50%" class="quick-btn" data-pct="50">50%</button>
+            <button title="Both screens to 75%" class="quick-btn" data-pct="75">75%</button>
+            <button title="Both screens to 100%" class="quick-btn" data-pct="100">100%</button>
           </div>
+
+          <div class="section-label" style="margin-top:4px">Lighting</div>
 
           <div class="two-column-grid">
             <div class="control-row compact ${ledLOn ? 'led-on' : ''}">
@@ -709,6 +701,14 @@ class RensonPergolaCard extends HTMLElement {
                 </button>
               </div>
             </div>
+          </div>
+
+          <div class="quick-set-row" data-target="leds">
+            <button title="Both lights to 0%" class="quick-btn" data-pct="0">0%</button>
+            <button title="Both lights to 25%" class="quick-btn" data-pct="25">25%</button>
+            <button title="Both lights to 50%" class="quick-btn" data-pct="50">50%</button>
+            <button title="Both lights to 75%" class="quick-btn" data-pct="75">75%</button>
+            <button title="Both lights to 100%" class="quick-btn" data-pct="100">100%</button>
           </div>
         </div>
       </div>
