@@ -16,7 +16,7 @@ A Home Assistant Lovelace custom card for the **Renson Camargue** pergola, using
 - **Screen left & right** — open / My (stop) / close with live % readout.
 - **Quick-set both screens** — one-tap buttons to set left & right screens together to 0 / 25 / 50 / 75 / 100 %.
 - **LED left & right** — on / My (preferred position) / off buttons, plus a position slider (`number` entity) with live readout.
-- **Quick-set both LEDs** — one-tap buttons to set left & right LEDs together to 0 / 25 / 50 / 75 / 100 %.
+- **Quick-set both LEDs** — one-tap buttons for left & right LEDs together: Off, My preset (~50%), or fully On.
 - Fully dark-themed, designed to blend with modern HA dashboards.
 - Tap-friendly buttons with no lingering hover/tap highlight on mobile.
 
@@ -93,13 +93,17 @@ The **My** button sends the OverKiz "preferred position" stop command — works 
 
 ### Quick-set
 
-Below the individual Roof controls, the individual Screens controls, and the individual LED controls, a row of five buttons (`0% / 25% / 50% / 75% / 100%`) lets you jump straight to a value in a single tap:
+Below the individual Roof and Screens controls, a row of five buttons (`0% / 25% / 50% / 75% / 100%`) lets you jump straight to a value in a single tap. The Lighting quick-set row only has three buttons (`0% / 50% / 100%`) — see note below.
 
 | Row | Action |
 |---|---|
 | Roof quick-set | Calls `cover.set_cover_tilt_position` with the chosen `tilt_position` on `roof_cover`. |
 | Screens quick-set | Calls `cover.set_cover_position` with the chosen `position` on `screen_left` and `screen_right` simultaneously. |
-| LEDs quick-set | At 0%, calls `light.turn_off` on `led_left` and `led_right`. Above 0%, calls `light.turn_on` on both, then `number.set_value` on `led_left_slider` and `led_right_slider` to set the level. |
+| LEDs quick-set (0%) | Calls `light.turn_off` on `led_left` and `led_right`. |
+| LEDs quick-set (50%) | Calls `button.press` on `led_left_button` and `led_right_button` — this presses the physical "My" preset, which is the only reliable way to reach a dimmed (non-0/100%) level on this hardware. |
+| LEDs quick-set (100%) | Calls `light.turn_on` on `led_left` and `led_right`. |
+
+> **Why only 3 LED buttons?** The LED position `number` entity doesn't actually drive real-time dimming on the Camargue hardware — testing showed the physical remote only produces a distinguishable brightness change via its "My" button (a hardware-programmed preset, typically around 50%), with On/Off being the only other reliable states. A 25%/75% quick-set button would just silently do nothing, so those were removed.
 
 ## Touch/mobile behavior
 

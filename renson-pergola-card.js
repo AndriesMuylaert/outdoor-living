@@ -4,10 +4,10 @@
  * via the OverKiz integration.
  *
  * GitHub: https://github.com/AndriesMuylaert/Outdoor-living
- * Version: 1.3.0
+ * Version: 1.3.1
  */
 
-const CARD_VERSION = '1.3.0';
+const CARD_VERSION = '1.3.1';
 
 // Tilt % → visual open angle (0 = closed/flat, 100 = fully open/vertical)
 function tiltToAngle(pct) {
@@ -711,12 +711,10 @@ class RensonPergolaCard extends HTMLElement {
             </div>
           </div>
 
-          <div class="quick-set-row" data-target="leds">
-            <button title="Both lights to 0%" class="quick-btn" data-pct="0">0%</button>
-            <button title="Both lights to 25%" class="quick-btn" data-pct="25">25%</button>
-            <button title="Both lights to 50%" class="quick-btn" data-pct="50">50%</button>
-            <button title="Both lights to 75%" class="quick-btn" data-pct="75">75%</button>
-            <button title="Both lights to 100%" class="quick-btn" data-pct="100">100%</button>
+          <div class="quick-set-row leds-quick-set" data-target="leds">
+            <button title="Both lights off" class="quick-btn" data-pct="0">0%</button>
+            <button title="Both lights to My position (~50%)" class="quick-btn" data-pct="50">50%</button>
+            <button title="Both lights fully on" class="quick-btn" data-pct="100">100%</button>
           </div>
         </div>
       </div>
@@ -929,18 +927,22 @@ class RensonPergolaCard extends HTMLElement {
     this._callService('cover', 'set_cover_position', cfg.screen_right, { position: pct });
   }
 
-  // Set both LEDs (left & right) to the same level in one tap
+  // Set both LEDs (left & right) to the same level in one tap.
+  // Note: on this hardware, continuous brightness via the position slider doesn't
+  // actually change the dimming level - only On, Off, and the "My" preset (~50%) do.
   _setBothLeds(pct) {
     const cfg = this._config;
     if (pct <= 0) {
       this._callService('light', 'turn_off', cfg.led_left);
       this._callService('light', 'turn_off', cfg.led_right);
-    } else {
+    } else if (pct >= 100) {
       this._callService('light', 'turn_on', cfg.led_left);
       this._callService('light', 'turn_on', cfg.led_right);
+    } else {
+      // ~50% - press the "My" preset button on both LEDs
+      this._callService('button', 'press', cfg.led_left_button);
+      this._callService('button', 'press', cfg.led_right_button);
     }
-    this._callService('number', 'set_value', cfg.led_left_slider, { value: pct });
-    this._callService('number', 'set_value', cfg.led_right_slider, { value: pct });
   }
 
   static getConfigElement() {
